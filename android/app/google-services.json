@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "336747751086",
+    "firebase_url": "https://tutormatching-1541621401347.firebaseio.com",
+    "project_id": "tutormatching-1541621401347",
+    "storage_bucket": "tutormatching-1541621401347.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336747751086:android:90f75a66138070c1",
+        "android_client_info": {
+          "package_name": "com.vwa.tutormatching"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "336747751086-nrbbbg5v08lpjfsd15r9c38c6fk1ldi9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZeJucvQx5gE0V1Oj7NVToA5oI7BjYlts"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
