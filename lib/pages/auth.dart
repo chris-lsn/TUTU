@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:scoped_model/scoped_model.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
+
+import '../models/resultHandler.dart';
 import '../models/auth.dart';
 import '../scoped-models/main.dart';
 
@@ -13,7 +15,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final Map<String, dynamic> _formData = {'name': null, 'email': null, 'password': null, 'acceptTerms': false, 'image': null};
+  final Map<String, dynamic> _formData = {'name': null, 'email': null, 'password': null, 'acceptTerms': false};
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTextController = TextEditingController();
   AuthMode _authMode = AuthMode.Login;
@@ -188,14 +190,14 @@ class _AuthPageState extends State<AuthPage> {
                                   _formKey.currentState.save();
 
                                   if (_authMode == AuthMode.Login) {
-                                    Map<String, dynamic> authResult = await model.login(_formData['email'], _formData['password']);
-                                    if (!authResult['result']) {
-                                      Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult['err_message'])));
-                                    } else {
+                                    ResultHandler authResult = await model.login(_formData['email'], _formData['password']);
+                                    if (authResult.isSuccess) {
                                       Navigator.pop(context);
+                                    } else {
+                                      Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult.err_message.toString())));
                                     }
                                   } else if (_authMode == AuthMode.Signup && _formData['acceptTerms']) {
-                                    model.signup(_formData['name'], _formData['email'], _formData['password'], _formData['image']);
+                                    model.signup(name: _formData['name'], email: _formData['email'], password: _formData['password']);
                                   }
                                 }
                               },

@@ -1,8 +1,12 @@
 import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../resources/errorMessage.dart';
+import '../models/resultHandler.dart';
 
 mixin ConnectedModel on Model {
   bool _isLoading = false;
@@ -22,36 +26,60 @@ mixin UserModel on ConnectedModel {
 
   bool get isLoggedIn => _authenticatedUser != null;
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<ResultHandler> login(String email, String password) async {
     try {
       _authenticatedUser = await _auth.signInWithEmailAndPassword(email: email, password: password);
     } on PlatformException catch (error) {
-      String err_message;
-      if (error.code == 'ERROR_USER_NOT_FOUND') {
-        err_message = 'Wrong E-mail or Password.';
-      } else if (error.code == 'ERROR_USER_DISABLED') {
-        err_message = 'Your account has been disabled';
-      }
-      return {'result': false, 'err_message': err_message};
+      return ResultHandler(isSuccess: false, err_message: ErrorMessage(error.code));
     }
     notifyListeners();
-    return {'result': true};
+    return ResultHandler(isSuccess: true);
   }
 
-  void signup(String name, String email, String password, File image) async {
-    FirebaseUser user = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-    UserUpdateInfo info = new UserUpdateInfo();
-    info.displayName = name;
+  Future<ResultHandler> signup({String name, String email, String password}) async {
+    FirebaseUser user;
+    try {
+      user = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+    } on PlatformException catch (error) {
+     return ResultHandler(isSuccess: false, err_message: ErrorMessage(error.code));
+    }
+    await updateProfile(name, null);
+    await user.sendEmailVerification();
+    await user.reload();
+    _authenticatedUser = user;
+    notifyListeners();
+    return ResultHandler(isSuccess: true);
+  }
+
+  Future<ResultHandler> updateCredentials(String email, String password) async {
+    if (email != _authenticatedUser.email) {
+      try {
+        await _authenticatedUser.updateEmail(email);
+      } on PlatformException catch (error) {
+        return ResultHandler(isSuccess: false, err_message: ErrorMessage(error.code));
+      }
+      await _authenticatedUser.sendEmailVerification();
+    }
+    if (password.isNotEmpty) 
+      await _authenticatedUser.updatePassword(password);
+    await _authenticatedUser.reload();
+    _authenticatedUser = await _auth.currentUser();
+    notifyListeners();
+  }
+
+  Future<void> updateProfile(String name, File image) async {
+    final UserUpdateInfo info = UserUpdateInfo();
+    
+    if (name != _authenticatedUser.displayName)
+      info.displayName = name;
     if (image != null) {
-      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('/user/${user.uid}/profile_pic.jpg');
+      StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('/user/${_authenticatedUser.uid}/profile_pic.jpg');
       StorageUploadTask uploadTask = firebaseStorageRef.putFile(image);
       String photoUrl = await (await uploadTask.onComplete).ref.getDownloadURL();
       info.photoUrl = photoUrl;
     }
-    user.updateProfile(info);
-    await user.sendEmailVerification();
-    await user.reload();
-    _authenticatedUser = user;
+    await _authenticatedUser.updateProfile(info);
+    _authenticatedUser = await _auth.currentUser();
     notifyListeners();
   }
 
