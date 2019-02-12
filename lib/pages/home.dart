@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
-import '../components/appbar.dart';
+
+import '../components/appbars.dart';
 import '../components/navbar.dart';
 import '../components/slideMenu.dart';
 
@@ -28,7 +29,7 @@ class HomePageState extends State<HomePage> {
             _currentIndex = index;
           });
         }, _currentIndex),
-        appBar: CustomAppBar(
+        appBar: HomeAppBar(
             title: 'tutu', titleStyle: TextStyle(fontFamily: 'MajorMono'), action: true),
         endDrawer: SlideMenu(),
         body: IndexedStack(
@@ -43,7 +44,6 @@ class HomePageState extends State<HomePage> {
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return HomePageState();
   }
 }

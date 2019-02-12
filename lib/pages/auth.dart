@@ -1,8 +1,9 @@
 import 'dart:ui';
-import 'package:scoped_model/scoped_model.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 
+import '../components/appbars.dart';
+import '../components/buttons.dart';
 import '../models/resultHandler.dart';
 import '../models/auth.dart';
 import '../scoped-models/main.dart';
@@ -15,7 +16,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final Map<String, dynamic> _formData = {'name': null, 'email': null, 'password': null, 'acceptTerms': false};
+  final Map<String, dynamic> _formData = {'name': null, 'email': null, 'password': null};
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTextController = TextEditingController();
   AuthMode _authMode = AuthMode.Login;
@@ -24,10 +25,7 @@ class _AuthPageState extends State<AuthPage> {
     return TextFormField(
       decoration: InputDecoration(
         labelText: 'Displayed Name',
-        filled: true,
-        prefixIcon: Icon(
-          Icons.person,
-        ),
+        border: InputBorder.none,
       ),
       validator: (String value) {
         if (value.isEmpty) {
@@ -43,12 +41,8 @@ class _AuthPageState extends State<AuthPage> {
   Widget _buildEmailTextField() {
     return TextFormField(
       decoration: InputDecoration(
-        filled: true,
-        hintText: "Enter an email",
         labelText: 'E-Mail',
-        prefixIcon: Icon(
-          Icons.email,
-        ),
+        border: InputBorder.none,
       ),
       keyboardType: TextInputType.emailAddress,
       validator: (String value) {
@@ -68,10 +62,7 @@ class _AuthPageState extends State<AuthPage> {
     return TextFormField(
       decoration: InputDecoration(
         labelText: 'Password',
-        filled: true,
-        prefixIcon: Icon(
-          Icons.vpn_key,
-        ),
+        border: InputBorder.none,
       ),
       obscureText: true,
       controller: _passwordTextController,
@@ -88,125 +79,121 @@ class _AuthPageState extends State<AuthPage> {
 
   Widget _buildPasswordConfirmTextField() {
     return TextFormField(
-      decoration: InputDecoration(labelText: 'Confirm Password', filled: true),
+      decoration: InputDecoration(
+        labelText: 'Confirm Password',
+        border: InputBorder.none,
+      ),
       obscureText: true,
       validator: (String value) {
-        if (_passwordTextController.text != value) {
+        if (_passwordTextController.text != value || value == '') {
           return 'Passwords do not match.';
         }
       },
     );
   }
 
-  Widget _buildAcceptCheckbox() {
-    return Row(
-      children: <Widget>[
-        Checkbox(
-          value: _formData['acceptTerms'],
-          onChanged: (bool value) {
+  Widget _buildDeclarationText() {
+    return Center(
+      child: Text(
+        "By signing up, you agree to our Terms & Privacy Policy.",
+        style: TextStyle(color: Colors.grey[700]),
+      ),
+    );
+  }
+
+  Widget _buildAuthSwitchingButton() {
+    return Center(
+      child: InkWell(
+          child: Text('${_authMode == AuthMode.Login ? 'Not registered yet?' : 'Already have an account?'}', style: TextStyle(color: Colors.blue)),
+          onTap: () {
             setState(() {
-              _formData['acceptTerms'] = value;
+              _authMode == AuthMode.Login ? _authMode = AuthMode.Signup : _authMode = AuthMode.Login;
             });
-          },
-        ),
-        Text(
-          'I agree to the terms & conditions',
-          style: TextStyle(fontSize: 14.0),
-        )
-      ],
+          }),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return LoadingButton(
+      onPress: (BuildContext context, MainModel model) async {
+        if (_formKey.currentState.validate()) {
+          _formKey.currentState.save();
+
+          ResultHandler authResult;
+          if (_authMode == AuthMode.Login) {
+            authResult = await model.login(_formData['email'], _formData['password']);
+          } else if (_authMode == AuthMode.Signup) {
+            authResult = await model.signup(name: _formData['name'], email: _formData['email'], password: _formData['password']);
+          }
+
+          if (authResult.isSuccess) {
+              Navigator.pop(context);
+            } else {
+              Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult.err_message.toString())));
+            }
+        }
+      },
+      name: 'Submit',
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          actions: <Widget>[
-            FlatButton(
-              child: Text(
-                'Forget Password',
-                style: TextStyle(color: Colors.white),
-              ),
-              onPressed: () {},
-            )
-          ],
-        ),
+        appBar: GeneralAppBar(authMode: _authMode),
         body: Container(
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-            child: SingleChildScrollView(
-              child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 40),
-                        child: Text(
-                          '${_authMode == AuthMode.Login ? 'Login' : 'Signup'}',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 27),
-                        ),
+          padding: EdgeInsets.symmetric(vertical: 20),
+          child: SingleChildScrollView(
+            child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                      color: Colors.white,
+                      child: _authMode == AuthMode.Signup
+                          ? ListTile(
+                              title: _buildDisplayNameTextField(),
+                              leading: Icon(Icons.person),
+                            )
+                          : Container(),
+                    ),
+                    Divider(height: 1,),
+                    Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        title: _buildEmailTextField(),
+                        leading: Icon(Icons.email),
                       ),
-                      _authMode == AuthMode.Signup ? _buildDisplayNameTextField() : Container(),
-                      SizedBox(
-                        height: 15,
+                    ),
+                    Divider(height: 1,),
+                    Container(
+                      color: Colors.white,
+                      child: ListTile(
+                        title: _buildPasswordTextField(),
+                        leading: Icon(Icons.lock),
                       ),
-                      _buildEmailTextField(),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      _buildPasswordTextField(),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      _authMode == AuthMode.Signup ? _buildPasswordConfirmTextField() : Container(),
-                      _authMode == AuthMode.Signup ? _buildAcceptCheckbox() : Container(),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Center(
-                        child: InkWell(
-                            child: Text('${_authMode == AuthMode.Login ? 'Not registered yet?' : 'Already have an account?'}',
-                                style: TextStyle(color: Colors.blue)),
-                            onTap: () {
-                              setState(() {
-                                _authMode == AuthMode.Login ? _authMode = AuthMode.Signup : _authMode = AuthMode.Login;
-                              });
-                            }),
-                      ),
-                      SizedBox(
-                        height: 50,
-                      ),
-                      ScopedModelDescendant<MainModel>(
-                        builder: (BuildContext context, Widget child, MainModel model) {
-                          return SizedBox(
-                            height: 50,
-                            width: double.infinity,
-                            child: RaisedButton(
-                              child: Text("Submit", style: TextStyle(color: Colors.white, fontSize: 16)),
-                              color: Colors.blue,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                              onPressed: () async {
-                                if (_formKey.currentState.validate()) {
-                                  _formKey.currentState.save();
-
-                                  if (_authMode == AuthMode.Login) {
-                                    ResultHandler authResult = await model.login(_formData['email'], _formData['password']);
-                                    if (authResult.isSuccess) {
-                                      Navigator.pop(context);
-                                    } else {
-                                      Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult.err_message.toString())));
-                                    }
-                                  } else if (_authMode == AuthMode.Signup && _formData['acceptTerms']) {
-                                    model.signup(name: _formData['name'], email: _formData['email'], password: _formData['password']);
-                                  }
-                                }
-                              },
-                            ),
-                          );
-                        },
-                      )
-                    ],
-                  )),
-            )));
+                    ),
+                    Divider(height: 1,),
+                    Container(
+                      color: Colors.white,
+                      child: _authMode == AuthMode.Signup
+                          ? ListTile(
+                              title: _buildPasswordConfirmTextField(),
+                              leading: Icon(Icons.lock_outline),
+                            )
+                          : Container(),
+                    ),
+                    Divider(height: 1,),
+                    SizedBox(height: 25),
+                    _buildAuthSwitchingButton(),
+                    SizedBox(height: 50),
+                    _buildSubmitButton(),
+                    SizedBox(height: 20),
+                    _authMode == AuthMode.Signup ? _buildDeclarationText() : Container(),
+                  ],
+                )),
+          ),
+        ));
   }
 }

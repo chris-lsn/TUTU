@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import './create/subjectList.dart';
-import '../../components/appbar.dart';
+import '../../components/appbars.dart';
 
 class CreateCaseFormState extends State<CreateCaseForm> {
   final _formKey = GlobalKey<FormState>();
@@ -61,7 +62,7 @@ List<DocumentSnapshot> _children;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: CustomAppBar(title: 'Create Case', action: false),
+        appBar: HomeAppBar(title: 'Create Case', action: false),
         body: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: ListView(

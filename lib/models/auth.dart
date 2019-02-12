@@ -1,4 +1,5 @@
 enum AuthMode {
   Login,
-  Signup
+  Signup,
+  ForgetPassword
 }

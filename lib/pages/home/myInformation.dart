@@ -52,7 +52,7 @@ class _MyInformationPageState extends State<MyInformationPage> {
                           child: Row(
                               children: _profileCard(model.authenticatedUser))),
                       onTap: () => Navigator.pushNamed(context,
-                          model.authenticatedUser == null ? '/login' : '/user/info'),
+                          model.authenticatedUser == null ? '/auth' : '/user/info'),
                     );
           },), 
           Divider(),

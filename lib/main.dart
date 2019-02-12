@@ -5,6 +5,7 @@ import "pages/home.dart";
 import 'pages/auth.dart';
 import 'pages/child/view.dart';
 import 'pages/user/info.dart';
+import 'pages/forgetPassword.dart';
 
 import 'scoped-models/main.dart';
 
@@ -27,7 +28,8 @@ class MyApp extends StatelessWidget {
           ),
           home: HomePage(),
           routes: <String, WidgetBuilder>{
-            '/login': (BuildContext context) => AuthPage(),
+            '/auth': (BuildContext context) => AuthPage(),
+            '/auth/forget': (BuildContext context) => ForgetPasswordPage(),
             '/home': (BuildContext context) => HomePage(),
             '/child/view': (BuildContext context) => ViewChildPage(),
             '/user/info': (BuildContext context) => UserInfoPage()
