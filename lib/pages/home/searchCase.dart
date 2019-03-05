@@ -4,7 +4,6 @@ import 'package:location/location.dart';
 import "package:google_maps_flutter/google_maps_flutter.dart";
 import 'package:simple_permissions/simple_permissions.dart';
 import '../../libraries/blackdrop.dart';
-import '../../main.dart';
 
 class SearchCasePageState extends State<SearchCasePage> {
   int currentpage = 0;
@@ -229,7 +228,6 @@ Widget caseDetails(Map<String, dynamic> tcase) {
 class SearchCasePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return SearchCasePageState();
   }
 }

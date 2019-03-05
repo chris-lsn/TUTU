@@ -6,7 +6,6 @@ class ViewCaseState extends State<ViewCasePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(title: Text('')),
         body: ListView(
@@ -73,10 +72,10 @@ class ViewCaseState extends State<ViewCasePage> {
 }
 
 class ViewCasePage extends StatefulWidget {
-  Map<String, dynamic> tutoring_case;
+  final Map<String, dynamic> cases = null;
+
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return ViewCaseState();
   }
 }

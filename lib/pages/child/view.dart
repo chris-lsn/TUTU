@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ViewChildPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.blue,

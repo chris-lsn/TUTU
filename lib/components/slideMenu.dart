@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import '../pages/auth.dart';
 import '../pages/home.dart';
-import '../pages/case/create.dart';
 
 class SlideMenu extends StatelessWidget {
+  
   @override
-  String _district;
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Drawer(
       child: ListView(
         padding: EdgeInsets.symmetric(horizontal: 20),

@@ -10,7 +10,7 @@ class CreateCaseFormState extends State<CreateCaseForm> {
   DocumentSnapshot _selectedChild;
   String _selectedChildId;
 
-  Map<String, List<String>> _subject_list = {
+  Map<String, List<String>> _subjectList = {
     '幼稚園': ['全科', '升小面試練習', '故事班'],
     '小學': [
       '全科',
@@ -129,7 +129,7 @@ List<DocumentSnapshot> _children;
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => SubjectList(
-                                        _subject_list[_selectedChild['educational_stage']]))))
+                                        _subjectList[_selectedChild['educational_stage']]))))
                       ],
                     )),
               )
@@ -142,7 +142,6 @@ List<DocumentSnapshot> _children;
 class CreateCaseForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return CreateCaseFormState();
   }
 }

@@ -5,7 +5,6 @@ import '../case/view.dart';
 class MyCasePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         floatingActionButton: FloatingActionButton(
             backgroundColor: Colors.blue,
@@ -23,7 +22,7 @@ class MyCasePage extends StatelessWidget {
   Widget _myCaseCards(BuildContext context) {
     TextStyle _caseCardTitleStyle =
         TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold);
-    TextStyle _caseCardTextStyle = TextStyle(fontSize: 15.0);
+        
     return Column(children: <Widget>[
       InkWell(
       onTap: () => Navigator.push(

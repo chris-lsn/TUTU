@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import '../components/buttons.dart';
 import '../components/appbars.dart';
-import '../models/auth.dart';
 import '../models/resultHandler.dart';
 import '../scoped-models/main.dart';
 
@@ -46,7 +45,7 @@ class ForgetPasswordState extends State<ForgetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: GeneralAppBar(authMode: AuthMode.ForgetPassword),
+        appBar: GeneralAppBar(title: 'Forget Password'),
         body: Container(
             padding: EdgeInsets.symmetric(vertical: 20),
             child: SingleChildScrollView(
@@ -68,7 +67,7 @@ class ForgetPasswordState extends State<ForgetPasswordPage> {
                               _startTimer();
                               Scaffold.of(context).showSnackBar(SnackBar(content: Text("An password reset have been sent to your email")));
                             } else {
-                              Scaffold.of(context).showSnackBar(SnackBar(content: Text(result.err_message.toString())));
+                              Scaffold.of(context).showSnackBar(SnackBar(content: Text(result.errorMessage.toString())));
                             }
                           }
                         },

@@ -4,7 +4,7 @@ import '../resources/errorMessage.dart';
 
 class ResultHandler {
   final bool isSuccess;
-  final ErrorMessage err_message;
+  final ErrorMessage errorMessage;
 
-  ResultHandler({@required this.isSuccess, this.err_message});
+  ResultHandler({@required this.isSuccess, this.errorMessage});
 }

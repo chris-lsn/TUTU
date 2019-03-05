@@ -11,7 +11,7 @@ class AddChildFormState extends State<AddChildForm> {
       _txtLastNameCtrl = TextEditingController();
   final _db = Firestore.instance;
 
-  Map<String, List<String>> _educational_stage_list = {
+  Map<String, List<String>> _educationalStageList = {
     '幼稚園': ['幼兒班 (K1)', '低班 (K2)', '高班 (K3)'],
     '小學': ['小一 (P1)', '小二 (P2)', '小三 (P3)', '小四 (P4)', '小五 (P5)', '小六(P6)'],
     '中學': ['中一 (P1)', '中二 (P2)', '中三 (P3)', '中四 (P4)', '中五 (P5)', '中六(P6)'],
@@ -19,7 +19,7 @@ class AddChildFormState extends State<AddChildForm> {
     '大學程度': ['大一', '大二', '大三', '大四']
   };
 
-  String _educational_stage, _garde_level, _gender;
+  String _educationalStage, _gardeLevel, _gender;
 
   Future _getImage() async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -35,8 +35,8 @@ class AddChildFormState extends State<AddChildForm> {
       'firstName': _txtFirstNameCtrl.text,
       'lastName': _txtLastNameCtrl.text,
       'gender': _gender,
-      'educational_stage': _educational_stage,
-      'garde_level': _garde_level
+      'educational_stage': _educationalStage,
+      'garde_level': _gardeLevel
     });
 
     if (_image != null) {
@@ -56,7 +56,6 @@ class AddChildFormState extends State<AddChildForm> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         appBar: AppBar(
           title: Text('Add Child'),
@@ -183,7 +182,7 @@ class AddChildFormState extends State<AddChildForm> {
                     height: 15,
                   ),
                   FormField<String>(
-                    initialValue: _educational_stage,
+                    initialValue: _educationalStage,
                     validator: (val) => (val == null || val.isEmpty)
                         ? 'Educational Stage is required'
                         : null,
@@ -202,11 +201,11 @@ class AddChildFormState extends State<AddChildForm> {
                               if (newValue == '') {
                                 newValue = null;
                               }
-                              setState(() => _educational_stage = newValue);
+                              setState(() => _educationalStage = newValue);
                               state.didChange(newValue);
                             },
                             items:
-                                _educational_stage_list.keys.map((String key) {
+                                _educationalStageList.keys.map((String key) {
                               return DropdownMenuItem<String>(
                                 value: key,
                                 child: Text(key),
@@ -228,7 +227,7 @@ class AddChildFormState extends State<AddChildForm> {
                       return InputDecorator(
                         decoration: InputDecoration(
                           labelText:
-                              _educational_stage != null ? 'Grade Level' : null,
+                              _educationalStage != null ? 'Grade Level' : null,
                           errorText: state.hasError ? state.errorText : null,
                         ),
                         isEmpty: state.value == '' || state.value == null,
@@ -242,11 +241,11 @@ class AddChildFormState extends State<AddChildForm> {
                               if (newValue == '') {
                                 newValue = null;
                               }
-                              setState(() => _garde_level = newValue);
+                              setState(() => _gardeLevel = newValue);
                               state.didChange(newValue);
                             },
-                            items: _educational_stage != null
-                                ? _educational_stage_list[_educational_stage]
+                            items: _educationalStage != null
+                                ? _educationalStageList[_educationalStage]
                                     .map((String key) {
                                     return DropdownMenuItem<String>(
                                       value: key,

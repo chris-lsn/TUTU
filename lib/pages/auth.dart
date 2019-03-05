@@ -4,8 +4,10 @@ import 'package:flutter/services.dart';
 
 import '../components/appbars.dart';
 import '../components/buttons.dart';
+import '../components/dropdownFormField.dart';
 import '../models/resultHandler.dart';
-import '../models/auth.dart';
+import '../models/modes/auth.dart';
+import '../models/modes/userRole.dart';
 import '../scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
@@ -20,6 +22,34 @@ class _AuthPageState extends State<AuthPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTextController = TextEditingController();
   AuthMode _authMode = AuthMode.Login;
+
+  Widget _buildRoleSelectDropdownList() {
+    return DropdownButtonFormField(
+      decoration: InputDecoration(
+        labelText: 'Displayed Name',
+        border: InputBorder.none,
+      ),
+      validator: (UserRole value) {
+        if (value == null) {
+          return 'User Role cannot be empty';
+        }
+      },
+      items: [
+        DropdownMenuItem<UserRole>(
+          value: UserRole.Tutor,
+          child: Text('Tutor'),
+        ),
+        DropdownMenuItem<UserRole>(
+          value: UserRole.Tutee,
+          child: Text('Tutee'),
+        ),
+        DropdownMenuItem<UserRole>(
+          value: UserRole.Parent,
+          child: Text('Parent'),
+        )
+      ],
+    );
+  }
 
   Widget _buildDisplayNameTextField() {
     return TextFormField(
@@ -114,85 +144,92 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildSubmitButton() {
-    return LoadingButton(
-      onPress: (BuildContext context, MainModel model) async {
-        if (_formKey.currentState.validate()) {
-          _formKey.currentState.save();
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: LoadingButton(
+        onPress: (BuildContext context, MainModel model) async {
+          if (_formKey.currentState.validate()) {
+            _formKey.currentState.save();
 
-          ResultHandler authResult;
-          if (_authMode == AuthMode.Login) {
-            authResult = await model.login(_formData['email'], _formData['password']);
-          } else if (_authMode == AuthMode.Signup) {
-            authResult = await model.signup(name: _formData['name'], email: _formData['email'], password: _formData['password']);
-          }
+            ResultHandler authResult;
+            if (_authMode == AuthMode.Login) {
+              authResult = await model.login(_formData['email'], _formData['password']);
+            } else if (_authMode == AuthMode.Signup) {
+              authResult = await model.signup(name: _formData['name'], email: _formData['email'], password: _formData['password']);
+            }
 
-          if (authResult.isSuccess) {
+            if (authResult.isSuccess) {
               Navigator.pop(context);
             } else {
-              Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult.err_message.toString())));
+              Scaffold.of(context).showSnackBar(SnackBar(content: Text(authResult.errorMessage.toString())));
             }
-        }
-      },
-      name: 'Submit',
+          }
+        },
+        name: 'Submit',
+      ),
     );
+  }
+
+  String get _appbarTitle {
+    switch (_authMode) {
+      case AuthMode.Login:
+        return 'Login';
+      case AuthMode.Signup:
+        return 'Signup';
+      case AuthMode.ForgetPassword:
+        return 'Forget Password';
+      default:
+        return null;
+    }
+  }
+
+  Widget _buildRow({Widget title, Icon leading, bool showWhenLogin}) {
+    return Column(
+            children: <Widget>[
+              Container(
+                  color: Colors.white,
+                  child: ListTile(
+                    title: title,
+                    leading: leading,
+                  )),
+              Divider(height: 1),
+            ],
+          );
+        
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: GeneralAppBar(authMode: _authMode),
+        appBar: GeneralAppBar(authMode: _authMode, title: _appbarTitle),
         body: Container(
           padding: EdgeInsets.symmetric(vertical: 20),
-          child: SingleChildScrollView(
-            child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      color: Colors.white,
-                      child: _authMode == AuthMode.Signup
-                          ? ListTile(
-                              title: _buildDisplayNameTextField(),
-                              leading: Icon(Icons.person),
-                            )
-                          : Container(),
-                    ),
-                    Divider(height: 1,),
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        title: _buildEmailTextField(),
-                        leading: Icon(Icons.email),
-                      ),
-                    ),
-                    Divider(height: 1,),
-                    Container(
-                      color: Colors.white,
-                      child: ListTile(
-                        title: _buildPasswordTextField(),
-                        leading: Icon(Icons.lock),
-                      ),
-                    ),
-                    Divider(height: 1,),
-                    Container(
-                      color: Colors.white,
-                      child: _authMode == AuthMode.Signup
-                          ? ListTile(
-                              title: _buildPasswordConfirmTextField(),
-                              leading: Icon(Icons.lock_outline),
-                            )
-                          : Container(),
-                    ),
-                    Divider(height: 1,),
-                    SizedBox(height: 25),
-                    _buildAuthSwitchingButton(),
-                    SizedBox(height: 50),
-                    _buildSubmitButton(),
-                    SizedBox(height: 20),
-                    _authMode == AuthMode.Signup ? _buildDeclarationText() : Container(),
-                  ],
-                )),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          _authMode ==AuthMode.Signup ? _buildRow(title: _buildDisplayNameTextField(), leading: Icon(Icons.person)) : Container(),
+                          _buildRow(title: _buildEmailTextField(), leading: Icon(Icons.email)),
+                          _buildRow(title: _buildPasswordTextField(), leading: Icon(Icons.lock)),
+                          _authMode ==AuthMode.Signup ? _buildRow(title: _buildPasswordConfirmTextField(), leading: Icon(Icons.lock_outline)) : Container(),
+                          SizedBox(height: 25),
+                          _buildAuthSwitchingButton(),
+                          SizedBox(height: 25),
+                        ],
+                      )),
+                ),
+              ),
+              _authMode == AuthMode.Signup ? _buildDeclarationText() : Container(),
+              SizedBox(
+                height: 10,
+              ),
+              _buildSubmitButton(),
+            ],
           ),
         ));
   }

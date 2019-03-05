@@ -9,16 +9,19 @@ import 'pages/forgetPassword.dart';
 
 import 'scoped-models/main.dart';
 
-
 void main() => runApp(MyApp());
 
 ThemeData appTheme = ThemeData(primaryColor: Colors.blue, fontFamily: 'Oxygen');
 
 class MyApp extends StatelessWidget {
+  final MainModel _model = MainModel();
+  MyApp() {
+    _model.autoAuthenticate();
+  }
   @override
   Widget build(BuildContext context) {
     return ScopedModel<MainModel>(
-      model: MainModel(),
+      model: _model,
       child: MaterialApp(
           theme: ThemeData(
             primaryColor: Colors.grey[900],
@@ -32,7 +35,8 @@ class MyApp extends StatelessWidget {
             '/auth/forget': (BuildContext context) => ForgetPasswordPage(),
             '/home': (BuildContext context) => HomePage(),
             '/child/view': (BuildContext context) => ViewChildPage(),
-            '/user/info': (BuildContext context) => UserInfoPage()
+            '/user/info': (BuildContext context) =>
+                ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) => UserInfoPage(model))
           }),
     );
   }

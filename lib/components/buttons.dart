@@ -14,7 +14,6 @@ class LoadingButton extends StatelessWidget {
       return Container(
           height: 50,
           width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 20),
           child: RaisedButton(
               child: model.isLoading
                   ? Container(

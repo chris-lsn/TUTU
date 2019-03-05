@@ -1,23 +1,122 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../components/appbars.dart';
+import '../../pages/common/updateTextfield.dart';
 import '../../scoped-models/main.dart';
 
+enum UserInfoTextField { DISPLAY_NAME, EMAIL, PASSWORD }
+
 class UserInfoPageState extends State<UserInfoPage> {
-  Widget _buildProfileRow({String label, String value, bool showArrow}) {
+  Widget _buildAvatarIcon(String avatar, Function updateAvatar) {
+    return Container(
+        height: 100.0,
+        padding: const EdgeInsets.only(left: 20),
+        child: InkWell(
+          onTap: () {
+            File _image;
+            showModalBottomSheet<void>(
+                context: context,
+                builder: (BuildContext context) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      ListTile(
+                          title: Center(child: Text('Take Photo')),
+                          onTap: () async {
+                            _image = await ImagePicker.pickImage(source: ImageSource.camera);
+                            await updateAvatar(image: _image);
+                            Navigator.pop(context);
+                          }),
+                      Divider(
+                        height: 1,
+                      ),
+                      ListTile(
+                          title: Center(child: Text('Choose from gallery')),
+                          onTap: () async {
+                            _image = await ImagePicker.pickImage(source: ImageSource.gallery);
+                            await updateAvatar(image: _image);
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  );
+                });
+          },
+          child: Stack(
+            children: <Widget>[
+              Container(
+                  padding: EdgeInsets.all(0.0),
+                  child: CircleAvatar(
+                    radius: 50.0,
+                    backgroundColor: Colors.grey[200],
+                    backgroundImage: NetworkImage(avatar),
+                    child: avatar == null
+                        ? Icon(
+                            Icons.person,
+                            color: Colors.grey,
+                            size: 65.0,
+                          )
+                        :Container(),
+                  ),
+                  width: 90.0,
+                  height: 90.0,
+                  decoration: BoxDecoration(
+                    color: Colors.black26,
+                    shape: BoxShape.circle,
+                  )),
+              Positioned(
+                width: 25.0,
+                bottom: -3.0,
+                left: 2,
+                child: CircleAvatar(
+                    radius: 25.0,
+                    backgroundColor: Colors.black,
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 17.0,
+                    )),
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildProfileRow({UserInfoTextField key, String label, String value, Function update}) {
+    final TextEditingController _textController = TextEditingController();
+    _textController.text = value;
+
     return Container(
       color: Colors.white,
       child: ListTile(
+        onTap: () => Navigator.of(context, rootNavigator: true).push(
+              CupertinoPageRoute<bool>(
+                fullscreenDialog: true,
+                builder: (BuildContext context) => UpdateTextFieldPage(
+                      updateFunc: update,
+                      textController: _textController,
+                      buttonText: label,
+                      textfield: TextFormField(
+                          controller: _textController,
+                          autofocus: true,
+                          decoration: InputDecoration(
+                            labelText: label,
+                          )),
+                    ),
+              ),
+            ),
         title: TextFormField(
           enabled: false,
-          initialValue: value,
+          controller: _textController,
           decoration: InputDecoration(
             labelText: label,
             border: InputBorder.none,
           ),
         ),
-        trailing: showArrow ? Icon(Icons.keyboard_arrow_right) : null,
+        trailing: Icon(Icons.keyboard_arrow_right),
       ),
     );
   }
@@ -42,15 +141,20 @@ class UserInfoPageState extends State<UserInfoPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                          padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                            Text('Confirmation', style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),),
-                            SizedBox(height: 20.0,),
-                            Text('Are you sure you want to logout?')
-                          ],)
-                        ),
+                            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Confirmation',
+                                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+                                ),
+                                SizedBox(
+                                  height: 20.0,
+                                ),
+                                Text('Are you sure you want to logout?')
+                              ],
+                            )),
                         SizedBox(height: 30),
                         Container(
                           width: double.infinity,
@@ -62,7 +166,6 @@ class UserInfoPageState extends State<UserInfoPage> {
                                 style: TextStyle(color: Colors.white),
                               ),
                               onPressed: () async {
-                                
                                 await onPressFunc(() {
                                   Navigator.pop(context);
                                   Navigator.pop(context);
@@ -79,31 +182,47 @@ class UserInfoPageState extends State<UserInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
-      appBar: GeneralAppBar(title: 'Edit Account'),
-      body: ScopedModelDescendant<MainModel>(
-        builder: (BuildContext context, Widget child, MainModel model) {
-          return model.authenticatedUser != null ? Container(
-              padding: EdgeInsets.symmetric(vertical: 20),
+        appBar: GeneralAppBar(title: 'Edit Account'),
+        body: ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) {
+          return Container(
+              alignment: Alignment.topLeft,
+              padding: EdgeInsets.symmetric(vertical: 40),
               child: ListView(
                 children: <Widget>[
-                  _buildProfileRow(label: 'Display Name', value: model.authenticatedUser.displayName, showArrow: true),
+                  _buildAvatarIcon(model.authenticatedUser.photoUrl, model.updateProfile),
+                  SizedBox(height: 20),
+                  _buildProfileRow(
+                    key: UserInfoTextField.DISPLAY_NAME,
+                    update: (String displayName) => model.updateProfile(name: displayName),
+                    label: 'Display Name',
+                    value: model.authenticatedUser.displayName,
+                  ),
                   Divider(height: 1),
-                  _buildProfileRow(label: 'Email', value: model.authenticatedUser.email, showArrow: true),
+                  _buildProfileRow(
+                    key: UserInfoTextField.EMAIL,
+                    update: (String email) => model.updateCredentials(email: email),
+                    label: 'Email',
+                    value: model.authenticatedUser.email,
+                  ),
                   Divider(height: 1),
-                  _buildProfileRow(label: 'Password', value: '******', showArrow: true),
+                  _buildProfileRow(
+                      key: UserInfoTextField.PASSWORD,
+                      update: (String password) => model.updateCredentials(password: password),
+                      label: 'Password',
+                      value: '******'),
                   Divider(height: 1),
                   _buildLogoutRow(onPressFunc: model.logout)
                 ],
-              )) : Container();
-        },
-      ),
-    );
+              ));
+        }));
   }
 }
 
 class UserInfoPage extends StatefulWidget {
+  final MainModel model;
+
+  UserInfoPage(this.model);
   @override
   State<StatefulWidget> createState() {
     return UserInfoPageState();
