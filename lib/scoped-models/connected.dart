@@ -48,17 +48,13 @@ mixin UserModel on ConnectedModel {
 
   void autoAuthenticate() async {
     final SharedPreferences _prefs = await SharedPreferences.getInstance();
-    final String token = _prefs.getString('token');
     final int userRoleIndex = _prefs.getInt('userRoleIndex');
 
     if (userRoleIndex != null) {
       _userRole = UserRole.values[userRoleIndex];
     }
 
-    if (token != null) {
-      _authenticatedUser = await _auth.signInWithCustomToken(token: token);
-      notifyListeners();
-    }
+    _authenticatedUser = await _auth.currentUser();
   }
 
   Future<ResultHandler> login(String email, String password) async {
@@ -69,8 +65,6 @@ mixin UserModel on ConnectedModel {
       toggleLoading();
       return ResultHandler(isSuccess: false, errorMessage: ErrorMessage(error.code));
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', await _authenticatedUser.getIdToken());
     toggleLoading();
     return ResultHandler(isSuccess: true);
   }

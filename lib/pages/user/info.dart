@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../components/appbars.dart';
 import '../../pages/common/updateTextfield.dart';
@@ -16,6 +17,7 @@ class UserInfoPageState extends State<UserInfoPage> {
         height: 100.0,
         padding: const EdgeInsets.only(left: 20),
         child: InkWell(
+          enableFeedback: false,
           onTap: () {
             File _image;
             showModalBottomSheet<void>(
@@ -27,9 +29,12 @@ class UserInfoPageState extends State<UserInfoPage> {
                       ListTile(
                           title: Center(child: Text('Take Photo')),
                           onTap: () async {
-                            _image = await ImagePicker.pickImage(source: ImageSource.camera);
-                            await updateAvatar(image: _image);
-                            Navigator.pop(context);
+                            _image = await ImagePicker.pickImage(
+                                source: ImageSource.camera, maxHeight: 150);
+                            if (_image != null) {
+                              Navigator.pop(context);
+                              await updateAvatar(image: _image);
+                            }
                           }),
                       Divider(
                         height: 1,
@@ -37,10 +42,27 @@ class UserInfoPageState extends State<UserInfoPage> {
                       ListTile(
                           title: Center(child: Text('Choose from gallery')),
                           onTap: () async {
-                            _image = await ImagePicker.pickImage(source: ImageSource.gallery);
-                            await updateAvatar(image: _image);
-                            Navigator.pop(context);
+                            _image = await ImagePicker.pickImage(
+                                source: ImageSource.gallery, maxHeight: 150);
+                            if (_image != null) {
+                              Navigator.pop(context);
+                              await updateAvatar(image: _image);
+                            }
                           }),
+                      ListTile(
+                          title: Center(child: Text('View photo')),
+                          onTap: () async {
+                            _image = await ImagePicker.pickImage(
+                                source: ImageSource.gallery, maxHeight: 150);
+                            if (_image != null) {
+                              Navigator.pop(context);
+                              await updateAvatar(image: _image);
+                            }
+                          }),
+                      ListTile(
+                        title: Center(child: Icon(Icons.close)),
+                        onTap: () => Navigator.pop(context),
+                      )
                     ],
                   );
                 });
@@ -52,14 +74,14 @@ class UserInfoPageState extends State<UserInfoPage> {
                   child: CircleAvatar(
                     radius: 50.0,
                     backgroundColor: Colors.grey[200],
-                    backgroundImage: NetworkImage(avatar),
+                    backgroundImage: CachedNetworkImageProvider(avatar),
                     child: avatar == null
                         ? Icon(
                             Icons.person,
                             color: Colors.grey,
                             size: 65.0,
                           )
-                        :Container(),
+                        : Container(),
                   ),
                   width: 90.0,
                   height: 90.0,
@@ -85,7 +107,8 @@ class UserInfoPageState extends State<UserInfoPage> {
         ));
   }
 
-  Widget _buildProfileRow({UserInfoTextField key, String label, String value, Function update}) {
+  Widget _buildProfileRow(
+      {UserInfoTextField key, String label, String value, Function update}) {
     final TextEditingController _textController = TextEditingController();
     _textController.text = value;
 
@@ -141,13 +164,16 @@ class UserInfoPageState extends State<UserInfoPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Container(
-                            padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+                            padding: EdgeInsets.symmetric(
+                                vertical: 20.0, horizontal: 30.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
                                   'Confirmation',
-                                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+                                  style: TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.w500),
                                 ),
                                 SizedBox(
                                   height: 20.0,
@@ -184,31 +210,36 @@ class UserInfoPageState extends State<UserInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: GeneralAppBar(title: 'Edit Account'),
-        body: ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) {
+        body: ScopedModelDescendant<MainModel>(
+            builder: (BuildContext context, Widget child, MainModel model) {
           return Container(
               alignment: Alignment.topLeft,
               padding: EdgeInsets.symmetric(vertical: 40),
               child: ListView(
                 children: <Widget>[
-                  _buildAvatarIcon(model.authenticatedUser.photoUrl, model.updateProfile),
+                  _buildAvatarIcon(
+                      model.authenticatedUser.photoUrl, model.updateProfile),
                   SizedBox(height: 20),
                   _buildProfileRow(
                     key: UserInfoTextField.DISPLAY_NAME,
-                    update: (String displayName) => model.updateProfile(name: displayName),
+                    update: (String displayName) =>
+                        model.updateProfile(name: displayName),
                     label: 'Display Name',
                     value: model.authenticatedUser.displayName,
                   ),
                   Divider(height: 1),
                   _buildProfileRow(
                     key: UserInfoTextField.EMAIL,
-                    update: (String email) => model.updateCredentials(email: email),
+                    update: (String email) =>
+                        model.updateCredentials(email: email),
                     label: 'Email',
                     value: model.authenticatedUser.email,
                   ),
                   Divider(height: 1),
                   _buildProfileRow(
                       key: UserInfoTextField.PASSWORD,
-                      update: (String password) => model.updateCredentials(password: password),
+                      update: (String password) =>
+                          model.updateCredentials(password: password),
                       label: 'Password',
                       value: '******'),
                   Divider(height: 1),

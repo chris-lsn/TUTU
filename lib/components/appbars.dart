@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import '../models/modes/auth.dart';
+import 'package:flutter/cupertino.dart';
 
 class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final TextStyle titleStyle;
   final bool action;
 
-  HomeAppBar({Key key, @required this.title, this.titleStyle = const TextStyle(), this.action = false}) : super(key: key);
+  HomeAppBar(
+      {Key key,
+      @required this.title,
+      this.titleStyle = const TextStyle(),
+      this.action = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      leading: Builder(
+          builder: (context) => IconButton(
+                icon: Icon(CupertinoIcons.person),
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              )),
       title: Text(
         title,
         style: titleStyle,
@@ -38,7 +49,8 @@ class GeneralAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
           alignment: Alignment.bottomLeft,
-          child: Text(title, style: TextStyle(color: Colors.white, fontSize: 20)),
+          child:
+              Text(title, style: TextStyle(color: Colors.white, fontSize: 20)),
         ),
       ),
       actions: <Widget>[

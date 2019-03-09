@@ -22,6 +22,7 @@ class _AuthPageState extends State<AuthPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordTextController = TextEditingController();
   AuthMode _authMode = AuthMode.Login;
+  
 
   Widget _buildRoleSelectDropdownList() {
     return DropdownButtonFormField(

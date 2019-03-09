@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import '../../components/buttons.dart';
 import '../../models/resultHandler.dart';
 import '../../scoped-models/main.dart';
@@ -10,24 +10,28 @@ class UpdateTextFieldPage extends StatefulWidget {
   final TextEditingController textController;
   final Function updateFunc;
 
-  UpdateTextFieldPage({@required this.textfield, @required this.buttonText, @required this.textController, @required this.updateFunc}) ;
+  UpdateTextFieldPage({@required this.textfield, @required this.buttonText, @required this.textController, @required this.updateFunc});
+
+  
   @override
   State<StatefulWidget> createState() {
-    return UpdateTextFieldState();
+    return _UpdateTextFieldState();
   }
 }
 
-class UpdateTextFieldState extends State<UpdateTextFieldPage> {
+class _UpdateTextFieldState extends State<UpdateTextFieldPage> {
+  
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-          child: Scaffold(
+
+    return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(color: Colors.black),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          brightness: Brightness.light,
         ),
         body: Container(
             padding: EdgeInsets.symmetric(vertical: 50.0, horizontal: 20.0),
@@ -49,7 +53,7 @@ class UpdateTextFieldState extends State<UpdateTextFieldPage> {
                 )
               ],
             )),
-      ),
-    );
+      );
+ 
   }
 }

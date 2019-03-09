@@ -1,26 +1,31 @@
 import 'package:flutter/material.dart';
 
+import '../models/modes/userRole.dart';
+
 class CustomNavbar extends StatelessWidget {
   final List<BottomNavigationBarItem> bottomBarItems = [];
 
   final TextStyle itemStyle = TextStyle(fontWeight: FontWeight.normal);
 
-  final HomeCb cb;
+  final Function onTapped;
   final int currentIndex;
+  final UserRole userRole;
 
-  CustomNavbar(this.cb, this.currentIndex) {
+  CustomNavbar(this.onTapped, this.currentIndex, this.userRole) {
     bottomBarItems.add(BottomNavigationBarItem(
         icon: Icon(Icons.home),
         title: Text(
           "My Case",
           style: itemStyle,
         )));
-    bottomBarItems.add(BottomNavigationBarItem(
+    if (userRole == UserRole.Tutor) {
+      bottomBarItems.add(BottomNavigationBarItem(
         icon: Icon(Icons.search),
         title: Text(
           "Search",
           style: itemStyle,
         )));
+    }
     bottomBarItems.add(BottomNavigationBarItem(
         icon: Icon(Icons.person),
         title: Text(
@@ -35,11 +40,7 @@ class CustomNavbar extends StatelessWidget {
       child: Theme(
           data: Theme.of(context).copyWith(primaryColor: Colors.blue, splashColor: Colors.blue),
           child: BottomNavigationBar(
-              fixedColor: Colors.blue, onTap: _onTabTapped, currentIndex: currentIndex, items: bottomBarItems, type: BottomNavigationBarType.fixed)),
+              fixedColor: Colors.blue, onTap: onTapped, currentIndex: currentIndex, items: bottomBarItems, type: BottomNavigationBarType.fixed)),
     );
   }
-
-  _onTabTapped(int index) => cb(index);
 }
-
-typedef HomeCb = void Function(int index);

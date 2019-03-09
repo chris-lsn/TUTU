@@ -23,17 +23,19 @@ class MyApp extends StatelessWidget {
     return ScopedModel<MainModel>(
       model: _model,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primaryColor: Colors.grey[900],
             textTheme: TextTheme(
               title: TextStyle(fontSize: 28, color: Colors.black, fontWeight: FontWeight.bold),
             ),
           ),
-          home: HomePage(),
+          home: ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) => HomePage(model)),
           routes: <String, WidgetBuilder>{
             '/auth': (BuildContext context) => AuthPage(),
             '/auth/forget': (BuildContext context) => ForgetPasswordPage(),
-            '/home': (BuildContext context) => HomePage(),
+            '/home': (BuildContext context) =>
+                ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) => HomePage(model)),
             '/child/view': (BuildContext context) => ViewChildPage(),
             '/user/info': (BuildContext context) =>
                 ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model) => UserInfoPage(model))

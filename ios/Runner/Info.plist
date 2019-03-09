@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>TUTU</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -18,10 +20,33 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.336747751086-6dg9g0v8pjpcjr4ptek1n5einig9m2a0</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Reason why app needs location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Reason why app needs location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Reason why app needs location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Reason why app needs location</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Reason why app needs location</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Reason why app needs location</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -43,29 +68,5 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Reason why app needs location</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Reason why app needs location</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>Reason why app needs location</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <!-- Copied from GoogleServices-Info.plist key REVERSED_CLIENT_ID -->
-                <string>com.googleusercontent.apps.336747751086-6dg9g0v8pjpcjr4ptek1n5einig9m2a0</string>
-            </array>
-        </dict>
-    </array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Reason why app needs location</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Reason why app needs location</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Reason why app needs location</string>
 </dict>
 </plist>

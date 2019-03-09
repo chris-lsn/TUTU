@@ -31,7 +31,7 @@ class LoadingButton extends StatelessWidget {
               color: Colors.black,
               disabledColor: Color(0xFF424242),
               splashColor: Color(0xFF6d6d6d),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
               onPressed: onPress == null || model.isLoading ? null : () async => onPress(context, model)));
     });
   }

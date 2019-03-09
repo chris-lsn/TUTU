@@ -126,9 +126,6 @@ class SearchCasePageState extends State<SearchCasePage> {
                                 style: TextStyle(fontSize: 20),
                               ),
                               SizedBox(width: 10),
-                              Icon(Icons.location_on),
-                              Text("嘉亨灣", style: TextStyle(color: Colors.black)),
-                              SizedBox(width: 10),
                               Icon(Icons.person),
                               Text("男 21")
                             ],
