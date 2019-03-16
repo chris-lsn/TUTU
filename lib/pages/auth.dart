@@ -4,10 +4,8 @@ import 'package:flutter/services.dart';
 
 import '../components/appbars.dart';
 import '../components/buttons.dart';
-import '../components/dropdownFormField.dart';
 import '../models/resultHandler.dart';
 import '../models/modes/auth.dart';
-import '../models/modes/userRole.dart';
 import '../scoped-models/main.dart';
 
 class AuthPage extends StatefulWidget {
@@ -24,33 +22,6 @@ class _AuthPageState extends State<AuthPage> {
   AuthMode _authMode = AuthMode.Login;
   
 
-  Widget _buildRoleSelectDropdownList() {
-    return DropdownButtonFormField(
-      decoration: InputDecoration(
-        labelText: 'Displayed Name',
-        border: InputBorder.none,
-      ),
-      validator: (UserRole value) {
-        if (value == null) {
-          return 'User Role cannot be empty';
-        }
-      },
-      items: [
-        DropdownMenuItem<UserRole>(
-          value: UserRole.Tutor,
-          child: Text('Tutor'),
-        ),
-        DropdownMenuItem<UserRole>(
-          value: UserRole.Tutee,
-          child: Text('Tutee'),
-        ),
-        DropdownMenuItem<UserRole>(
-          value: UserRole.Parent,
-          child: Text('Parent'),
-        )
-      ],
-    );
-  }
 
   Widget _buildDisplayNameTextField() {
     return TextFormField(

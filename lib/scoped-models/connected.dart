@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:scoped_model/scoped_model.dart';
@@ -26,6 +28,15 @@ mixin CasesModel on ConnectedModel {}
 mixin UtilityModel on ConnectedModel {
   bool get isLoading => _isLoading;
   set isLoading(bool result) => _isLoading = result;
+}
+
+mixin ChildModel on ConnectedModel {
+  Future<ResultHandler> createChild(Map<String, dynamic> payload) async {
+    toggleLoading();
+    await Firestore.instance.collection('user').document(_authenticatedUser.uid).collection('children').add(payload);
+    toggleLoading();
+    return ResultHandler(isSuccess: true);
+  }
 }
 
 mixin UserModel on ConnectedModel {
@@ -55,6 +66,7 @@ mixin UserModel on ConnectedModel {
     }
 
     _authenticatedUser = await _auth.currentUser();
+    notifyListeners();
   }
 
   Future<ResultHandler> login(String email, String password) async {

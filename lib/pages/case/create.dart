@@ -57,7 +57,7 @@ class CreateCaseFormState extends State<CreateCaseForm> {
     '大學程度': ['其他']
   };
 
-List<DocumentSnapshot> _children;
+  List<DocumentSnapshot> _children;
 
   @override
   Widget build(BuildContext context) {

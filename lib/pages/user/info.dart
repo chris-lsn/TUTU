@@ -74,14 +74,8 @@ class UserInfoPageState extends State<UserInfoPage> {
                   child: CircleAvatar(
                     radius: 50.0,
                     backgroundColor: Colors.grey[200],
-                    backgroundImage: CachedNetworkImageProvider(avatar),
-                    child: avatar == null
-                        ? Icon(
-                            Icons.person,
-                            color: Colors.grey,
-                            size: 65.0,
-                          )
-                        : Container(),
+                    backgroundImage: avatar != null ? CachedNetworkImageProvider(avatar) :AssetImage('assets/images/avatar.png'),
+                    
                   ),
                   width: 90.0,
                   height: 90.0,
